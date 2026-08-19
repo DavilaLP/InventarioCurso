@@ -1,8 +1,8 @@
 # Sistema de Control de Inventario y Stock - Guía de Instalación y Configuración
 
-Esta es la guía paso a paso para configurar e instalar el proyecto localmente, incluyendo tanto el Backend (servidor Node.js con Express y MongoDB) como el Frontend (aplicación React).
+Esta es la guía paso a paso para configurar e instalar el proyecto localmente, incluyendo tanto el Backend (servidor Node.js con Express y MongoDB) como el Frontend (aplicación React)...
 
----
+---docs: aporte inicial de Jduvan
 
 ## Requisitos Previos
 
