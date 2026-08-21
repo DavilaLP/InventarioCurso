@@ -4,7 +4,9 @@ Esta es la guía paso a paso para configurar e instalar el proyecto localmente, 
 
 ---
 
-## Requisitos Previos
+## Requisitos Previos para que funcione el proyecto
+
+
 
 Antes de comenzar, asegúrate de tener instalado:
 1. **Node.js** (versión v16 o superior recomendada)

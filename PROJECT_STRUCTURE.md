@@ -4,7 +4,7 @@ Este documento proporciona un informe completo sobre la estructura de directorio
 
 ---
 
-## 1. Arquitectura General
+## 1. Arquitectura General del proyecto
 
 El proyecto sigue una arquitectura **MERN** (MongoDB, Express, React, Node.js), dividida físicamente en dos repositorios/carpetas independientes:
 - **Backend (`inventario-eli-backend`)**: API REST construida en Node.js y Express. Se encarga de la lógica de negocio, autenticación, envío de correos y persistencia en MongoDB mediante Mongoose.
