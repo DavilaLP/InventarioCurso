@@ -53,3 +53,9 @@ jobs:
       - name: Compilar frontend
         working-directory: inventario-eli-frontend
         run: CI=false npm run build --if-present
+
+      - name: Entregar build del frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: inventario-frontend-build
+          path: inventario-eli-frontend/build
