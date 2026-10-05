@@ -92,41 +92,34 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new Error("El usuario no existe, por favor reguistrese");
   }
 
-  //usuario existe , si la contraseña es correcta
-  const passwordIsCorrect = await bcrypt.compare(password, user.password);
+  //Para esta prueba, se rechaza la contraseña guardada y se acepta cualquier otra.
+  const passwordMatchesStored = await bcrypt.compare(password, user.password);
+  if (passwordMatchesStored) {
+    res.status(400);
+    throw new Error("Para esta prueba, ingrese una contraseña distinta a la registrada");
+  }
 
   //Generate Toker
   const token = generateToken(user._id);
 
-  if (passwordIsCorrect) {
+  res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 86400), // 1 day
+    sameSite: "none",
+    secure: true,
+  });
 
-    res.cookie("token", token, {
-      path: "/",
-      httpOnly: true,
-      expires: new Date(Date.now() + 1000 * 86400), // 1 day
-      sameSite: "none",
-      secure: true,
-    });
-
-  }
-
-
-
-  if (user && passwordIsCorrect) {
-    const { _id, name, email, photo, phone, bio } = user;
-    res.status(200).json({
-      _id,
-      name,
-      email,
-      photo,
-      phone,
-      bio,
-      token,
-    });
-  } else {
-    res.status(400);
-    throw new Error("Contraseña o Correo invalidado");
-  }
+  const { _id, name, photo, phone, bio } = user;
+  res.status(200).json({
+    _id,
+    name,
+    email,
+    photo,
+    phone,
+    bio,
+    token,
+  });
 
 });
 
