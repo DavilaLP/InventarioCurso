@@ -1,5 +1,6 @@
 const Sale = require("../models/saleModel");
 const Product = require("../models/productModel");
+const History = require("../models/historyModel");
 
 // --- REGISTRAR VENTA ---
 const registerSale = async (req, res) => {
@@ -10,12 +11,20 @@ const registerSale = async (req, res) => {
   for (const item of items) {
     const product = await Product.findById(item.productId);
     if (!product) return res.status(404).json({ msg: "Producto no encontrado" });
-    if (product.quantity < item.quantity)
-      return res.status(400).json({ msg: "Stock insuficiente" });
+    if (Number(product.quantity) < Number(item.quantity))
+      return res.status(400).json({ msg: `Stock insuficiente para ${product.name}` });
 
     // Descontar del stock
-    product.quantity -= item.quantity;
+    product.quantity = String(Number(product.quantity) - Number(item.quantity));
     await product.save();
+
+    // Registrar en Historial de Movimientos
+    await History.create({
+      product: product._id,
+      action: "venta",
+      user: req.user.id,
+      details: `Se vendieron ${item.quantity} unidades. Stock restante: ${product.quantity}`,
+    });
 
     saleItems.push({
       product: product._id,
@@ -28,7 +37,7 @@ const registerSale = async (req, res) => {
   }
 
   const sale = await Sale.create({
-    items: saleItems,   // <--- ¡usa saleItems, no items!
+    items: saleItems,
     total,
     user: req.user.id
   });
@@ -36,26 +45,21 @@ const registerSale = async (req, res) => {
   res.status(201).json(sale);
 };
 
-
 // --- HISTORIAL DE VENTAS ---
 const salesHistory = async (req, res) => {
   const { from, to } = req.query;
-  let filter = {};
-if (from && to) {
-   const fromDate = new Date(from); // "2025-07-16T00:00:00.000Z"
-  const toDate = new Date(to);     // "2025-07-16T00:00:00.000Z"
-  toDate.setHours(23, 59, 59, 999); // <-- Esto lo convierte en "2025-07-16T23:59:59.999Z"
-  filter.date = { $gte: fromDate, $lte: toDate };
-  console.log(fromDate, toDate, filter);
+  let filter = { user: req.user.id };
+  if (from && to) {
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+    toDate.setHours(23, 59, 59, 999);
+    filter.date = { $gte: fromDate, $lte: toDate };
+  }
 
-}
-
-
-   const sales = await Sale.find(filter)
+  const sales = await Sale.find(filter)
     .populate("items.product", "name category price")
-    .sort("date");
+    .sort("-date");
   res.status(200).json(sales);
-  
 };
 
 // --- BORRAR HISTORIAL DE VENTAS ---

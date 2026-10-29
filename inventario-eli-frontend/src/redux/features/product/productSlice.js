@@ -170,7 +170,7 @@ const productSlice = createSlice({
       .addCase(getProducts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.isSuccess = false;
+        state.isError = false;
         console.log(action.payload);
         state.products = action.payload;
 
@@ -188,7 +188,7 @@ const productSlice = createSlice({
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.isSuccess = false;
+        state.isError = false;
         toast.success("Producto borrado Correctamente")
       })
       .addCase(deleteProduct.rejected, (state, action) => {
@@ -204,7 +204,7 @@ const productSlice = createSlice({
       .addCase(getProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.isSuccess = false;
+        state.isError = false;
         state.product = action.payload;
       })
       .addCase(getProduct.rejected, (state, action) => {
@@ -220,7 +220,7 @@ const productSlice = createSlice({
       .addCase(updateProduct.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.isSuccess = false;
+        state.isError = false;
         toast.success("Producto Actualizado Correctamente")
       })
       .addCase(updateProduct.rejected, (state, action) => {

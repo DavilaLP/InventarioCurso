@@ -171,11 +171,15 @@ const loginStatus = asyncHandler(async (req, res) => {
     return res.json(false);
   }
   //Verificar Token
-  const verified = jwt.verify(token, process.env.JWT_SECRET);
-  if (verified) {
-    return res.json(true);
+  try {
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (verified) {
+      return res.json(true);
+    }
+    return res.json(false);
+  } catch (error) {
+    return res.json(false);
   }
-  return res.json(false);
 });
 
 // Actualizar Usuario

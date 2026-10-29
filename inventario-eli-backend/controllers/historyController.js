@@ -2,9 +2,10 @@ const asyncHandler = require("express-async-handler");
 const History = require("../models/historyModel");
 
 const getHistory = asyncHandler(async (req, res) => {
-    const history = await History.find()
-        .populate('user', 'name email') // Muestra usuario
-        .populate('product', 'name');   // Muestra producto
+    const history = await History.find({ user: req.user.id })
+        .populate('user', 'name email')
+        .populate('product', 'name')
+        .sort('-createdAt');
     res.status(200).json(history);
 });
 
@@ -14,9 +15,8 @@ const clearHistory = async (req, res) => {
 };
 
 const getSalesReport = asyncHandler(async (req, res) => {
-  // Puedes agregar filtros por rango de fechas, usuario, producto, etc.
   const { from, to } = req.query;
-  const query = { action: "venta" };
+  const query = { user: req.user.id, action: "venta" };
   if (from || to) {
     query.date = {};
     if (from) query.date.$gte = new Date(from);
@@ -24,8 +24,9 @@ const getSalesReport = asyncHandler(async (req, res) => {
   }
   const sales = await History.find(query)
     .populate('user', 'name email')
-    .populate('product', 'name');
+    .populate('product', 'name')
+    .sort('-date');
   res.status(200).json(sales);
 });
 
-module.exports = { getHistory ,clearHistory, getSalesReport};
+module.exports = { getHistory, clearHistory, getSalesReport };

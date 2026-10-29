@@ -8,13 +8,16 @@ export const getHistory = async () => {
   return response.data;
 };
 
-const res = await axios.get(`${BACKEND_URL}/api/history/sales`, { withCredentials: true });
-
-export const clearHistory = async (token) => {
-  // Cambia la URL por la ruta real en tu backend
-  return await fetch('/api/history/clear', {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const getSalesReport = async (from, to) => {
+  let url = `${BACKEND_URL}/api/history/sales`;
+  if (from && to) {
+    url += `?from=${from}&to=${to}`;
+  }
+  const response = await axios.get(url, { withCredentials: true });
+  return response.data;
 };
 
+export const clearHistory = async () => {
+  const response = await axios.delete(`${BACKEND_URL}/api/history`, { withCredentials: true });
+  return response.data;
+};

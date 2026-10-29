@@ -2,20 +2,15 @@ const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
 const cloudinary = require("cloudinary").v2;
-const History = require("../models/historyModel"); // <-- Asegúrate de crearlo antes
+const History = require("../models/historyModel");
 
 // Crear Producto
 const createProduct = asyncHandler(async (req, res) => {
-       console.log("User:", req.user);
-      console.log("Body:", req.body);
-      console.log("File:", req.file);
-
    const { name, sku, category, quantity, price, description } = req.body;
    if (!name || !category || !quantity || !price || !description) {
       res.status(400);
       throw new Error("Por favor llenar todas las celdas");
    }
-
 
    let fileData = {};
    if (req.file) {
@@ -104,7 +99,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
    const { name, category, quantity, price, description } = req.body;
    const { id } = req.params;
-   const product = await Product.findById(req.params.id);
+   const product = await Product.findById(id);
    if (!product) {
       res.status(404);
       throw new Error("Product not found");
@@ -128,16 +123,16 @@ const updateProduct = asyncHandler(async (req, res) => {
          fileType: req.file.mimetype,
          fileSize: fileSizeFormatter(req.file.size, 2),
       };
-   };
+   }
 
    const updatedProduct = await Product.findByIdAndUpdate(
       { _id: id },
       {
-         name,
-         category,
-         quantity,
-         price,
-         description,
+         name: name !== undefined ? name : product.name,
+         category: category !== undefined ? category : product.category,
+         quantity: quantity !== undefined ? quantity : product.quantity,
+         price: price !== undefined ? price : product.price,
+         description: description !== undefined ? description : product.description,
          image: Object.keys(fileData).length === 0 ? product?.image : fileData,
       },
       { new: true, runValidators: true }
@@ -148,16 +143,8 @@ const updateProduct = asyncHandler(async (req, res) => {
       product: product._id,
       action: "editado",
       user: req.user.id,
-      details: `Producto editado: ${name}`,
+      details: `Producto editado: ${name !== undefined ? name : product.name}`,
    });
-
-   await History.create({
-   product: product._id,
-   action: "venta",
-   user: req.user.id,
-   details: `Se vendieron ${cantidadVendida} unidades. Stock restante: ${product.quantity}`,
-   });
-
 
    res.status(200).json(updatedProduct);
 });
@@ -169,4 +156,3 @@ module.exports = {
    deleteProduct,
    updateProduct,
 };
-

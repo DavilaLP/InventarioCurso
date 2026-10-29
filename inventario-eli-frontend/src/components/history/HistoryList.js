@@ -10,17 +10,18 @@ const HistoryList = ({ history = [], onClearHistory }) => {
   );
 
   return (
-    <div className="history-table">
+    <div className="history-container">
       <div className="history-header">
         <input
+          className="history-search"
           placeholder="Buscar historial..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <button onClick={onClearHistory}>Borrar historial</button>
+        <button className="history-clear-btn" onClick={onClearHistory}>Borrar historial</button>
       </div>
       <div className="history-table-scroll">
-        <table>
+        <table className="history-table">
           <thead>
             <tr>
               <th>Fecha</th>
@@ -41,7 +42,7 @@ const HistoryList = ({ history = [], onClearHistory }) => {
               ))
             ) : (
               <tr>
-                <td colSpan={3} style={{ textAlign: "center", color: "#888" }}>No hay historial.</td>
+                <td colSpan={4} style={{ textAlign: "center", color: "#888" }}>No hay historial.</td>
               </tr>
             )}
           </tbody>

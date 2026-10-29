@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import "./sales.scss";
 import jsPDF from "jspdf";
@@ -12,14 +12,16 @@ const SaleHistory = () => {
   const [to, setTo] = useState("");
   const [search, setSearch] = useState("");
 
-  const fetchSales = async () => {
+  const fetchSales = useCallback(async () => {
     let url = `${BACKEND_URL}/api/sales`;
     if (from && to) url += `?from=${from}&to=${to}`;
     const res = await axios.get(url, { withCredentials: true });
     setSales(res.data);
-  };
+  }, [from, to]);
 
-  useEffect(() => { fetchSales(); }, [from, to]);
+  useEffect(() => {
+    fetchSales();
+  }, [fetchSales]);
 
   // Filtro de búsqueda por producto, total, fecha
   const filtered = sales.filter(sale =>
@@ -84,10 +86,12 @@ const SaleHistory = () => {
         />
       
       </div>
-      <div>
+      <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", marginTop: "10px" }}>
         <label>De: <input type="date" value={from} onChange={e => setFrom(e.target.value)} /></label>
         <label> A: <input type="date" value={to} onChange={e => setTo(e.target.value)} /></label>
         <button onClick={fetchSales}>Buscar</button>
+        <button type="button" onClick={handleExportCSV} style={{ padding: "6px 12px", cursor: "pointer", borderRadius: "5px", background: "#2e7d32", color: "#fff", border: "none" }}>Exportar CSV</button>
+        <button type="button" onClick={handleExportPDF} style={{ padding: "6px 12px", cursor: "pointer", borderRadius: "5px", background: "#d32f2f", color: "#fff", border: "none" }}>Exportar PDF</button>
       </div>
       <div className="history-table-scroll" style={{ marginTop: 12, maxHeight: 340, overflowY: "auto", overflowX: "auto" }}>
         <table className="sale-history-table" style={{ width: "100%" }}>
@@ -97,7 +101,7 @@ const SaleHistory = () => {
               <th>Fecha</th>
               <th>Productos</th>
               <th>Cantidad</th>
-              <th></th>
+              <th>Categoría</th>
               <th>Total</th>
             </tr>
           </thead>
