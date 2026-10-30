@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { createReport } from "../../services/reportService";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { getSales } from "../../services/saleService";
+import { getUser } from "../../services/authService";
 import "../../components/reports/reportes.scss";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +14,7 @@ const InformeVentas = () => {
   const [nombreInforme, setNombreInforme] = useState("");
   const [nombreEmpresa, setNombreEmpresa] = useState("");
   const [ruc, setRuc] = useState("");
+  const [datosEmpresaCargados, setDatosEmpresaCargados] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [periodo, setPeriodo] = useState({ desde: "", hasta: "" });
@@ -28,8 +30,6 @@ const InformeVentas = () => {
     if (data) {
       const parsed = JSON.parse(data);
       setNombreInforme(parsed.nombreInforme || "");
-      setNombreEmpresa(parsed.nombreEmpresa || "");
-      setRuc(parsed.ruc || "");
       setDireccion(parsed.direccion || "");
       setTelefono(parsed.telefono || "");
       setPeriodo(parsed.periodo || { desde: "", hasta: "" });
@@ -37,15 +37,27 @@ const InformeVentas = () => {
   }, []);
 
   useEffect(() => {
+    const cargarDatosEmpresa = async () => {
+      const user = await getUser();
+      if (user) {
+        setNombreEmpresa(user.companyName || "");
+        setRuc(user.ruc || "");
+        setCambiosPendientes(true);
+      }
+      setDatosEmpresaCargados(true);
+    };
+
+    cargarDatosEmpresa();
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem("pdfFormData", JSON.stringify({
       nombreInforme,
-      nombreEmpresa,
-      ruc,
       direccion,
       telefono,
       periodo,
     }));
-  }, [nombreInforme, nombreEmpresa, ruc, direccion, telefono, periodo]);
+  }, [nombreInforme, direccion, telefono, periodo]);
 
   // --------- OBTIENE LAS VENTAS EN EL RANGO ---------
   useEffect(() => {
@@ -58,10 +70,8 @@ const InformeVentas = () => {
   const handleCampo = campo => e => {
     setCambiosPendientes(true);
     if (campo === "nombreInforme") setNombreInforme(e.target.value);
-    if (campo === "nombreEmpresa") setNombreEmpresa(e.target.value);
     if (campo === "direccion") setDireccion(e.target.value);
     if (campo === "telefono") setTelefono(e.target.value);
-    if (campo === "ruc") setRuc(e.target.value);
   };
   const handlePeriodo = parte => e => {
     setCambiosPendientes(true);
@@ -185,10 +195,10 @@ const InformeVentas = () => {
           Nombre del informe:
           <input type="text" value={nombreInforme} onChange={handleCampo("nombreInforme")} placeholder="Ej: Informe de Ventas" />
         </label>
-        <label>
-          Nombre empresa:
-          <input type="text" value={nombreEmpresa} onChange={handleCampo("nombreEmpresa")} placeholder="Ej: Mi Empresa S.A.C." />
-        </label>
+        <div className="datos-empresa-informe">
+          <p><strong>Nombre de la empresa:</strong> {datosEmpresaCargados ? nombreEmpresa || "No registrado" : "Cargando..."}</p>
+          <p><strong>RUC:</strong> {datosEmpresaCargados ? ruc || "No registrado" : "Cargando..."}</p>
+        </div>
         <label>
           Dirección:
           <input type="text" value={direccion} onChange={handleCampo("direccion")} placeholder="Ej: Av. Principal 123" />
@@ -196,10 +206,6 @@ const InformeVentas = () => {
         <label>
           Teléfono:
           <input type="text" value={telefono} onChange={handleCampo("telefono")} placeholder="Ej: 999999999" />
-        </label>
-        <label>
-          RUC:
-          <input type="text" value={ruc} onChange={handleCampo("ruc")} placeholder="Ej: 123456789" />
         </label>
         <label>
           Desde:
@@ -229,16 +235,19 @@ const InformeVentas = () => {
         )}
         <button className="btn-vista-previa"
           onClick={handleActualizarPDF}
-          disabled={generandoPDF || !cambiosPendientes || ventas.length === 0}
+          disabled={generandoPDF || !cambiosPendientes || ventas.length === 0 || !datosEmpresaCargados || !nombreEmpresa || !ruc}
         >
           {generandoPDF ? "Actualizando..." : "Actualizar vista previa"}
         </button>
         {ventas.length === 0 && (
           <p style={{ color: "red" }}>No hay ventas registradas en el rango de fechas seleccionado.</p>
         )}
+        {datosEmpresaCargados && (!nombreEmpresa || !ruc) && (
+          <p style={{ color: "red" }}>Completa el nombre de la empresa y el RUC en tu perfil para generar el informe.</p>
+        )}
         <button className="btn-guardar-informe"
           onClick={handleGuardar}
-          disabled={guardando || !pdfBase64}
+          disabled={guardando || !pdfBase64 || !nombreEmpresa || !ruc}
         >
           {guardando ? "Guardando..." : "Guardar informe"}
         </button>

@@ -15,6 +15,8 @@ const initialState = {
     name: name,
     user: {
       name: "",
+      companyName: "",
+      ruc: "",
       email: "",
       phone: "",
       bio: "",
@@ -36,6 +38,8 @@ const authSlice = createSlice({
     SET_USER(state, action) {
       const profile = action.payload;
       state.user.name = profile.name;
+      state.user.companyName = profile.companyName;
+      state.user.ruc = profile.ruc;
       state.user.email = profile.email;
       state.user.phone = profile.phone;
       state.user.bio = profile.bio;

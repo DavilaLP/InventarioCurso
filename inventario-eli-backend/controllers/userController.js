@@ -15,11 +15,17 @@ const generateToken = (id) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
+  const companyName = typeof req.body.companyName === "string" ? req.body.companyName.trim() : "";
+  const ruc = typeof req.body.ruc === "string" ? req.body.ruc.trim() : "";
 
   // VALIDATION
-  if (!name || !email || !password) {
+  if (!name || !companyName || !ruc || !email || !password) {
     res.status(400);
     throw new Error("Por favor llenar los campos requeridos");
+  }
+  if (!/^\d{11}$/.test(ruc)) {
+    res.status(400);
+    throw new Error("El RUC debe tener 11 dígitos");
   }
   if (password.length < 6) {
     res.status(400);
@@ -40,6 +46,8 @@ const registerUser = asyncHandler(async (req, res) => {
   //Create new user
   const user = await User.create({
     name,
+    companyName,
+    ruc,
     email,
     password,
   });
@@ -57,10 +65,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    const { _id, name, email, photo, phone, bio } = user;
+    const { _id, name, companyName, ruc, email, photo, phone, bio } = user;
     res.status(201).json({
       _id,
       name,
+      companyName,
+      ruc,
       email,
       photo,
       phone,
@@ -110,10 +120,12 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   });
 
-  const { _id, name, photo, phone, bio } = user;
+  const { _id, name, companyName, ruc, photo, phone, bio } = user;
   res.status(200).json({
     _id,
     name,
+    companyName,
+    ruc,
     email,
     photo,
     phone,
@@ -142,10 +154,12 @@ const getUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    const { _id, name, email, photo, phone, bio } = user;
+    const { _id, name, companyName, ruc, email, photo, phone, bio } = user;
     res.status(200).json({
       _id,
       name,
+      companyName,
+      ruc,
       email,
       photo,
       phone,
@@ -176,9 +190,21 @@ const updateUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    const { name, email, photo, phone, bio } = user;
+    const { name, companyName, ruc, email, photo, phone, bio } = user;
+    if (req.body.ruc !== undefined && req.body.ruc !== "") {
+      if (typeof req.body.ruc !== "string" || !/^\d{11}$/.test(req.body.ruc)) {
+        res.status(400);
+        throw new Error("El RUC debe tener 11 dígitos");
+      }
+    }
+    if (req.body.companyName !== undefined && typeof req.body.companyName !== "string") {
+      res.status(400);
+      throw new Error("El nombre de la empresa no es válido");
+    }
     user.email = email;
     user.name = req.body.name || name;
+    user.companyName = req.body.companyName !== undefined ? req.body.companyName.trim() : companyName;
+    user.ruc = req.body.ruc !== undefined ? req.body.ruc.trim() : ruc;
     user.phone = req.body.phone || phone;
     user.bio = req.body.bio || bio;
     user.photo = req.body.photo || photo;
@@ -187,6 +213,8 @@ const updateUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       _id: updateUser._id,
       name: updateUser.name,
+      companyName: updateUser.companyName,
+      ruc: updateUser.ruc,
       email: updateUser.email,
       photo: updateUser.photo,
       phone: updateUser.phone,

@@ -23,6 +23,8 @@ const EditProfile = () => {
 
     const initialState = {
         name: user?.name,
+        companyName: user?.companyName || "",
+        ruc: user?.ruc || "",
         email: user?.email,
         phone: user?.phone,
         bio: user?.bio,
@@ -46,7 +48,6 @@ const EditProfile = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            //se sube imagen
             let imageURL;
             if (profileImage &&
                 (
@@ -67,22 +68,19 @@ const EditProfile = () => {
                 );
                 const imgData = await response.json()
                 imageURL = imgData.url.toString()
-                //guardar perfil
-                const formData = {
-                    name: profile.name,
-                    phone: profile.phone,
-                    bio: profile.bio,
-                    photo: profileImage ? imageURL : profile.photo,
-
-                }
-                const data = await updateUser(formData)
-                console.log(data);
-                toast.success("Usuario  Actualizado");
-                navigate("/profile");
-                setIsLoading(false);
-            }  
-
-            
+            }
+            const formData = {
+                name: profile.name,
+                companyName: profile.companyName,
+                ruc: profile.ruc,
+                phone: profile.phone,
+                bio: profile.bio,
+                photo: imageURL || profile.photo,
+            }
+            await updateUser(formData)
+            toast.success("Usuario Actualizado");
+            navigate("/profile");
+            setIsLoading(false);
         } catch (error) {
             console.log(error);
             setIsLoading(false)
@@ -103,6 +101,14 @@ const EditProfile = () => {
                             <label>Nombre:</label>
                             <input type="text" name="name" value={profile?.name} onChange={handleInputChange} />
 
+                        </p>
+                        <p>
+                            <label>Nombre de la empresa:</label>
+                            <input type="text" name="companyName" value={profile?.companyName} onChange={handleInputChange} />
+                        </p>
+                        <p>
+                            <label>RUC:</label>
+                            <input type="text" name="ruc" value={profile?.ruc} onChange={handleInputChange} inputMode="numeric" maxLength="11" pattern="[0-9]{11}" />
                         </p>
                         <p>
                             <label>Correo:</label>

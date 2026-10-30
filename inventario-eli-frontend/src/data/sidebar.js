@@ -2,6 +2,7 @@ import { FaTh, FaRegChartBar, FaCommentAlt, FaHistory } from "react-icons/fa";
 import { BiImageAdd } from "react-icons/bi";
 import { FcSalesPerformance } from "react-icons/fc";
 import { LuFileSearch } from "react-icons/lu";
+import { BsPencilSquare } from "react-icons/bs";
 
 
 
@@ -44,6 +45,11 @@ const menu = [
     title: "informes",
     icon: <LuFileSearch />,
     path: "/informes"
+  },
+  {
+    title: "Escribir informe",
+    icon: <BsPencilSquare />,
+    path: "/informe-ventas"
   },
   {
     title: "Contactar",
