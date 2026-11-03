@@ -60,6 +60,17 @@
   gap: 16px;
   min-width: 330px;
 
+  .datos-empresa-informe {
+    background: #f0f4fc;
+    border-radius: 8px;
+    color: #38507b;
+    padding: 8px 12px;
+
+    p {
+      margin: 4px 0;
+    }
+  }
+
   label {
     display: flex;
     flex-direction: column;

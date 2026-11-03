@@ -44,6 +44,12 @@ const Profile = () => {
                           <p> 
                             <b>Name:</b> {profile?.name}
                           </p>
+                          <p>
+                            <b>Empresa:</b> {profile?.companyName}
+                          </p>
+                          <p>
+                            <b>RUC:</b> {profile?.ruc}
+                          </p>
                           <p> 
                             <b>Correo:</b> {profile?.email}
                           </p>

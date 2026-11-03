@@ -59,6 +59,69 @@ section {
   padding-top: 2rem;
 }
 
+@media (max-width: 768px) {
+  html {
+    font-size: 9px;
+  }
+
+  body {
+    background: #f5f7fb;
+  }
+
+  section {
+    padding: 2.5rem 0;
+  }
+
+  .container,
+  .--pad {
+    padding: 0 15px;
+  }
+
+  .header {
+    padding-top: 1.2rem;
+  }
+
+  .header .--flex-between {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .header h3 {
+    width: 100%;
+    font-size: 2rem;
+  }
+
+  .--grid-15,
+  .--grid-25 {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2.8rem;
+  }
+  h2 {
+    font-size: 2.4rem;
+  }
+  h3 {
+    font-size: 2rem;
+  }
+  h4 {
+    font-size: 1.8rem;
+  }
+
+  .--text-xl {
+    font-size: 3.2rem;
+  }
+  .--text-lg {
+    font-size: 2.8rem;
+  }
+  .--text-md {
+    font-size: 2.2rem;
+  }
+}
+
 /* UTILITY CLASSES */
 
 /* Flex */

@@ -12,6 +12,8 @@ import Loader from "../../components/loader/Loader";
 
 const initialState ={
     name: "",
+    companyName: "",
+    ruc: "",
     email: "",
     password: "",
     password2: "",
@@ -22,7 +24,7 @@ const Register = () => {
     const navigate = useNavigate()
     const [ isLoading, setIsLoading] = useState(false);
     const [formData, setformData] = useState(initialState);
-    const {name, email ,password ,password2} = formData;
+    const {name, companyName, ruc, email ,password ,password2} = formData;
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -32,8 +34,11 @@ const Register = () => {
     const register = async (e) => {
         e.preventDefault();
 
-        if (!name || !email || !password){
+        if (!name || !companyName || !ruc || !email || !password){
             return toast.error("Todos los campos son requeridos")
+        }
+        if (!/^\d{11}$/.test(ruc)){
+            return toast.error("El RUC debe tener 11 dígitos")
         }
         if (password.length < 6){
             return toast.error("La Contraseña debe tener mas de 6 caracteres")
@@ -46,7 +51,7 @@ const Register = () => {
         }
 
         const userData = {
-            name, email, password,
+            name, companyName, ruc, email, password,
         };
         setIsLoading(true)
         try {
@@ -71,6 +76,8 @@ const Register = () => {
                 <h2>Registrese</h2>
                  <form onSubmit={register}>
                     <input type="text" placeholder="Nombre" required name="name" value={name} onChange={handleInputChange}/>
+                    <input type="text" placeholder="Nombre de la empresa" required name="companyName" value={companyName} onChange={handleInputChange}/>
+                    <input type="text" placeholder="RUC (11 dígitos)" required name="ruc" value={ruc} onChange={handleInputChange} inputMode="numeric" maxLength="11" pattern="[0-9]{11}"/>
                     <input type="email" placeholder="Correo" required name="email" value={email} onChange={handleInputChange}/>
                     <input type="password" placeholder="Contraseña" required name="password" value={password} onChange={handleInputChange} />
                     <input type="password" placeholder="Confirmar Contraseña" required name="password2" value={password2} onChange={handleInputChange}/>

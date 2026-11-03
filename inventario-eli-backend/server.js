@@ -1,4 +1,5 @@
 const dotenv = require("dotenv").config();
+const dns = require("node:dns");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -67,6 +68,19 @@ app.use(errorHandler);
 
 // Conectando a base de datos e iniciar servidor
 const PORT = process.env.PORT || 5001;
+
+if (process.env.MONGO_DNS_SERVERS) {
+    const dnsServers = process.env.MONGO_DNS_SERVERS
+        .split(",")
+        .map((server) => server.trim())
+        .filter(Boolean);
+
+    if (dnsServers.length === 0) {
+        throw new Error("MONGO_DNS_SERVERS must contain at least one DNS server");
+    }
+
+    dns.setServers(dnsServers);
+}
 
 mongoose
     .connect(process.env.MONGO_URI)

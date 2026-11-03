@@ -6,6 +6,17 @@ const userSchema = mongoose.Schema({
           type: String,
           required: [true, "Please add a name"]
        },
+       companyName: {
+        type: String,
+        trim: true,
+        default: ""
+       },
+       ruc: {
+        type: String,
+        trim: true,
+        default: "",
+        match: [/^(?:\d{11})?$/, "El RUC debe tener 11 dígitos"]
+       },
        email: {
         type: String,
         required: [true, "Please add a email"],
