@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Servicio 1: Backend API (Node.js + Express)
+  # ==========================================
+  backend:
+    build:
+      context: ./inventario-eli-backend
+      dockerfile: Dockerfile
+    container_name: inventario-backend
+    restart: always
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - NODE_ENV=production
+      - MONGO_URI=mongodb+srv://josemer:jose2003@cluster0.xxmvfd0.mongodb.net/projecto-tesis?retryWrites=true&w=majority&authSource=admin
+      - JWT_SECRET=jose123
+      - FRONTEND_URL=http://localhost:3000
+      - CLOUDINARY_URL=cloudinary://239893473173131:eMlLIacj945pNn5Yvyyi_BGHZUo@dgb7q8yaw
+      - EMAIL_HOST=smtp.gmail.com
+      - EMAIL_PORT=465
+      - EMAIL_SECURE=true
+      - EMAIL_USER=12jmarts@gmail.com
+      - EMAIL_PASS=yuzkezyrdsegtvom
+    networks:
+      - inventario-network
+
+  # ==========================================
+  # Servicio 2: Frontend SPA (React + Nginx)
+  # ==========================================
+  frontend:
+    build:
+      context: ./inventario-eli-frontend
+      dockerfile: Dockerfile
+    container_name: inventario-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5001
+    depends_on:
+      - backend
+    networks:
+      - inventario-network
+
+# Red interna aislada para comunicación entre contenedores
+networks:
+  inventario-network:
+    driver: bridge
