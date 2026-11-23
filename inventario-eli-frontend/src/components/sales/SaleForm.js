@@ -7,7 +7,7 @@ import { getProducts } from "../../redux/features/product/productSlice";
 
 
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const SaleForm = ({ onVentaRegistrada }) => {
   const dispatch = useDispatch();

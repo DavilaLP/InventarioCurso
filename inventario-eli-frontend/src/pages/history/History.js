@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import HistoryList from "../../components/history/HistoryList";
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const History = () => {
   const [history, setHistory] = useState([]);

@@ -1,7 +1,7 @@
 // src/services/historyService.js
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 export const getHistory = async () => {
   const response = await axios.get(`${BACKEND_URL}/api/history`, { withCredentials: true });

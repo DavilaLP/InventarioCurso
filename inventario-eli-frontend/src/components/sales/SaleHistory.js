@@ -4,7 +4,7 @@ import "./sales.scss";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const SaleHistory = () => {
   const [sales, setSales] = useState([]);

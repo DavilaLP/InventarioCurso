@@ -3,7 +3,7 @@ import axios from "axios";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import "./sales.scss";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:5001";
 
 const SalesChart = forwardRef((props, ref) => {
   const [data, setData] = useState([]);
