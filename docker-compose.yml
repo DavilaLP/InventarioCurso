@@ -34,12 +34,12 @@ services:
     build:
       context: ./inventario-eli-frontend
       dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=http://localhost:5001
     container_name: inventario-frontend
     restart: always
     ports:
       - "3000:80"
-    environment:
-      - REACT_APP_BACKEND_URL=http://localhost:5001
     depends_on:
       - backend
     networks:

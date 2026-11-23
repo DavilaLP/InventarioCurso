@@ -5,6 +5,10 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
+# Argumento de build para la URL del backend en React
+ARG REACT_APP_BACKEND_URL=http://localhost:5001
+ENV REACT_APP_BACKEND_URL=$REACT_APP_BACKEND_URL
+
 # Copiar package.json y package-lock.json
 COPY package*.json ./
 
