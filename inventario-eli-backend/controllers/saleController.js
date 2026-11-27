@@ -1,21 +1,34 @@
 const Sale = require("../models/saleModel");
 const Product = require("../models/productModel");
 const History = require("../models/historyModel");
+const {
+  validateSaleItems,
+  calculateRemainingStock,
+  calculateItemSubtotal,
+} = require("../utils/saleValidator");
 
 // --- REGISTRAR VENTA ---
 const registerSale = async (req, res) => {
   const { items } = req.body;
+  const validation = validateSaleItems(items);
+  if (!validation.valid) {
+    return res.status(400).json({ msg: validation.msg });
+  }
+
   let total = 0;
-  const saleItems = [];  
+  const saleItems = [];
 
   for (const item of items) {
     const product = await Product.findById(item.productId);
     if (!product) return res.status(404).json({ msg: "Producto no encontrado" });
-    if (Number(product.quantity) < Number(item.quantity))
+
+    const stockCheck = calculateRemainingStock(product.quantity, item.quantity);
+    if (!stockCheck.ok) {
       return res.status(400).json({ msg: `Stock insuficiente para ${product.name}` });
+    }
 
     // Descontar del stock
-    product.quantity = String(Number(product.quantity) - Number(item.quantity));
+    product.quantity = stockCheck.remaining;
     await product.save();
 
     // Registrar en Historial de Movimientos
@@ -33,7 +46,7 @@ const registerSale = async (req, res) => {
       quantity: item.quantity,
       price: product.price,
     });
-    total += product.price * item.quantity;
+    total += calculateItemSubtotal(product.price, item.quantity);
   }
 
   const sale = await Sale.create({
